@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriClimate+ — EU Innovation Project Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-900: #173404;
+    --green-800: #27500A;
+    --green-600: #3B6D11;
+    --green-400: #639922;
+    --green-200: #97C459;
+    --green-100: #C0DD97;
+    --green-50:  #EAF3DE;
+    --teal-800:  #085041;
+    --teal-600:  #0F6E56;
+    --teal-400:  #1D9E75;
+    --teal-100:  #9FE1CB;
+    --teal-50:   #E1F5EE;
+    --amber-600: #854F0B;
+    --amber-400: #BA7517;
+    --amber-100: #FAC775;
+    --amber-50:  #FAEEDA;
+    --blue-600:  #185FA5;
+    --blue-400:  #378ADD;
+    --blue-50:   #E6F1FB;
+    --gray-800:  #444441;
+    --gray-600:  #5F5E5A;
+    --gray-200:  #B4B2A9;
+    --gray-100:  #D3D1C7;
+    --gray-50:   #F1EFE8;
+    --coral-400: #D85A30;
+    --bg: #f8f7f4;
+    --surface: #ffffff;
+    --text: #2C2C2A;
+    --text-muted: #5F5E5A;
+    --border: rgba(0,0,0,0.1);
+    --radius: 10px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a18;
+      --surface: #242421;
+      --text: #ece9e1;
+      --text-muted: #9a9890;
+      --border: rgba(255,255,255,0.1);
+      --green-50: #1e2e10;
+      --teal-50: #0d2820;
+      --amber-50: #2a1e08;
+      --blue-50: #0d1e30;
+      --gray-50: #232321;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--green-800);
+    color: #fff;
+    padding: 0 2rem;
+  }
+  .header-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    gap: 1rem;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: -0.2px;
+  }
+  .logo-badge {
+    background: var(--green-400);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+  .header-meta {
+    font-size: 12px;
+    color: rgba(255,255,255,0.65);
+    text-align: right;
+  }
+
+  /* ── Nav tabs ── */
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+  }
+  .tab {
+    padding: 0 1.25rem;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--green-600); border-bottom-color: var(--green-600); }
+  .tab i { font-size: 16px; }
+
+  /* ── Main layout ── */
+  main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 3rem;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── Section header ── */
+  .section-header {
+    margin-bottom: 1.25rem;
+  }
+  .section-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .section-header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  /* ── Grid layouts ── */
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 1.5rem; }
+  .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 1.5rem; }
+  .grid-1-2 { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 1.5rem; }
+  @media (max-width: 900px) {
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(2, 1fr); }
+    .grid-2, .grid-2-1, .grid-1-2 { grid-template-columns: 1fr; }
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+  }
+  .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ── KPI cards ── */
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+  }
+  .kpi-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .kpi-value {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .kpi-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 5px;
+  }
+  .badge-green { background: var(--green-50); color: var(--green-800); }
+  .badge-amber { background: var(--amber-50); color: var(--amber-600); }
+  .badge-teal  { background: var(--teal-50);  color: var(--teal-800); }
+  .badge-blue  { background: var(--blue-50);  color: var(--blue-600); }
+
+  /* ── Scenario cards ── */
+  .scenario-card {
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .scenario-header {
+    padding: 1rem 1.25rem 0.75rem;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .scenario-body { padding: 0 1.25rem 1rem; }
+  .scenario-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12.5px;
+  }
+  .scenario-row:last-child { border-bottom: none; }
+  .scenario-row .label { color: var(--text-muted); }
+  .scenario-row .val { font-weight: 600; }
+  .scenario-npv {
+    margin-top: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .scenario-npv .npv-label { font-size: 11px; font-weight: 600; opacity: 0.8; }
+  .scenario-npv .npv-val { font-size: 18px; font-weight: 700; }
+
+  /* ── Progress bar ── */
+  .progress-wrap { margin: 6px 0; }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 3px;
+  }
+  .progress-label .name { color: var(--text-muted); }
+  .progress-label .pval { font-weight: 600; }
+  .progress-bar { height: 6px; border-radius: 3px; background: var(--gray-100); overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; }
+
+  /* ── Timeline ── */
+  .timeline { position: relative; padding-left: 1.5rem; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: var(--border);
+  }
+  .tl-item { position: relative; margin-bottom: 1rem; }
+  .tl-dot {
+    position: absolute;
+    left: -1.5rem;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--surface);
+  }
+  .tl-title { font-weight: 600; font-size: 13px; }
+  .tl-body { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ── Chart legend ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ── Table ── */
+  .data-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .data-table th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .data-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--gray-50); }
+  .data-table .num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .data-table .highlight td { background: var(--green-50); color: var(--green-800); font-weight: 600; }
+
+  /* ── Market bar ── */
+  .mkt-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .mkt-label { width: 180px; font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
+  .mkt-bar-wrap { flex: 1; height: 20px; background: var(--gray-50); border-radius: 4px; overflow: hidden; }
+  .mkt-bar { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; }
+  .mkt-bar span { font-size: 11px; font-weight: 600; color: #fff; }
+  .mkt-val { width: 60px; text-align: right; font-size: 12px; font-weight: 600; }
+
+  /* ── Pill tag ── */
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* ── Divider ── */
+  .divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+  /* ── Footer note ── */
+  .footnote {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <i class="ti ti-leaf" style="font-size:22px; color:#C0DD97" aria-hidden="true"></i>
+      AgriClimate+ Innovation Project
+      <span class="logo-badge">EU LIFE</span>
+    </div>
+    <div class="header-meta">
+      Pilot study · Po Valley, Northern Italy<br>
+      Pig farming · Climate control technology
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <div class="tab active" onclick="showTab('overview', this)">
+      <i class="ti ti-layout-dashboard" aria-hidden="true"></i> Overview
+    </div>
+    <div class="tab" onclick="showTab('energy', this)">
+      <i class="ti ti-solar-panel" aria-hidden="true"></i> Energy
+    </div>
+    <div class="tab" onclick="showTab('production', this)">
+      <i class="ti ti-chart-line" aria-hidden="true"></i> Production
+    </div>
+    <div class="tab" onclick="showTab('investment', this)">
+      <i class="ti ti-report-money" aria-hidden="true"></i> Investment
+    </div>
+    <div class="tab" onclick="showTab('market', this)">
+      <i class="ti ti-world" aria-hidden="true"></i> Market
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ══════════════ OVERVIEW ══════════════ -->
+<section id="tab-overview" class="section active">
+  <div class="section-header">
+    <h2>Project overview</h2>
+    <p>EU-funded pilot evaluating reversible heat pump technology for pig farrowing units — energy, production, and investment analysis</p>
+  </div>
+
+  <div class="grid-4">
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-solar-panel" aria-hidden="true"></i> Solar generation</div>
+      <div class="kpi-value">579<span style="font-size:16px;font-weight:500">k</span></div>
+      <div class="kpi-sub">kWh / year  ·  525 kWp installed</div>
+      <div class="kpi-badge badge-green"><i class="ti ti-trending-up"></i> 170% of farm demand</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-pig" aria-hidden="true"></i> Annual farrowings</div>
+      <div class="kpi-value">1,192</div>
+      <div class="kpi-sub">15,133 piglets weaned · 7.4 kg avg</div>
+      <div class="kpi-badge badge-teal">512 sows · 12.7 weaned/litter</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-currency-euro" aria-hidden="true"></i> Annual benefit (est.)</div>
+      <div class="kpi-value">€46k</div>
+      <div class="kpi-sub">Energy savings + production gain</div>
+      <div class="kpi-badge badge-green">+€9k with CER scheme</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-building-factory-2" aria-hidden="true"></i> EU market potential</div>
+      <div class="kpi-value">€3.7B</div>
+      <div class="kpi-sub">65,000 target farms across EU</div>
+      <div class="kpi-badge badge-blue">€468M Italy alone</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Project at a glance</div>
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot" style="background: var(--green-400)"></div>
+          <div class="tl-title">Technology installed</div>
+          <div class="tl-body">Two 70 kW reversible heat pumps — heating, cooling, and heat recovery in three livestock buildings</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background: var(--teal-400)"></div>
+          <div class="tl-title">Summer cooling benefit</div>
+          <div class="tl-body">–10 THI points in farrowing zone · 298 summer litters benefit · +7.86 kg live weight per litter</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background: var(--blue-400)"></div>
+          <div class="tl-title">Energy self-sufficiency</div>
+          <div class="tl-body">PV array produces 170% of farm demand · heat pump electricity cost = €0 (surplus PV covers it)</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot" style="background: var(--amber-400)"></div>
+          <div class="tl-title">Regulatory tailwind</div>
+          <div class="tl-body">EPBD 2024 bans fossil fuel boiler subsidies from Jan 2025 — heat pump is the only compliant path</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Investment scenario comparison — NPV 20 years @ 5%</div>
+      <div style="position:relative; height:220px; margin-top:8px;">
+        <canvas id="chartOverview" role="img" aria-label="Bar chart of NPV at 20 years for three investment scenarios. Scenario 1 no incentives: 65k euros. Scenario 2 with grants: 373k. Scenario 3 grants plus solar: 493k.">NPV: No incentives €65k, With grants €373k, Grants + solar €493k.</canvas>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#639922"></span>Scenario 1 — no incentives</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>Scenario 2 — 60% grants</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#185FA5"></span>Scenario 3 — grants + solar CER</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title">Differential cost concept</div>
+      <p style="font-size:12.5px; color:var(--text-muted); line-height:1.6; margin-bottom:10px;">
+        The farm must replace its old heating system regardless. The true cost of innovation is not the full system price — it is the <strong style="color:var(--text)">incremental difference</strong> versus the mandatory baseline renewal.
+      </p>
+      <div style="background:var(--green-50); border-radius:8px; padding:12px; text-align:center;">
+        <div style="font-size:11px; color:var(--green-800); font-weight:600; margin-bottom:4px;">DIFFERENTIAL COST</div>
+        <div style="font-size:15px; color:var(--text); margin-bottom:2px;">€390,000 − €90,000</div>
+        <div style="font-size:22px; font-weight:700; color:var(--green-600);">= €300,000</div>
+        <div style="font-size:11px; color:var(--green-800); margin-top:4px;">with 60% grants → net €120,000</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">CO₂ reduction</div>
+      <div style="display:flex; align-items:flex-end; gap:6px; margin-bottom:8px;">
+        <div style="font-size:32px; font-weight:700; color:var(--green-600); line-height:1;">35</div>
+        <div style="font-size:13px; color:var(--text-muted); padding-bottom:4px;">t CO₂eq / farm / year</div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="name">Fossil boiler (baseline)</span>
+          <span class="pval" style="color:var(--coral-400)">49.4 t</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:100%; background:var(--coral-400)"></div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="name">Heat pump system</span>
+          <span class="pval" style="color:var(--teal-400)">14.4 t</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:29%; background:var(--teal-400)"></div></div>
+      </div>
+      <div style="margin-top:10px; font-size:11px; color:var(--text-muted);">–71% operational emissions. Scale to 2,000 EU farms → ~70,000 t/year avoided.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Key project metrics</div>
+      <table class="data-table">
+        <tr><td style="color:var(--text-muted)">Pilot farm</td><td class="num">Po Valley, N. Italy</td></tr>
+        <tr><td style="color:var(--text-muted)">Investment (gross)</td><td class="num">€ 390,000</td></tr>
+        <tr><td style="color:var(--text-muted)">Grant coverage (max)</td><td class="num">60%</td></tr>
+        <tr><td style="color:var(--text-muted)">Net investment</td><td class="num" style="color:var(--green-600)">€ 156,000</td></tr>
+        <tr><td style="color:var(--text-muted)">Annual benefit</td><td class="num" style="color:var(--green-600)">~ € 46,000</td></tr>
+        <tr><td style="color:var(--text-muted)">Simple payback</td><td class="num">~ 3.4 years</td></tr>
+        <tr><td style="color:var(--text-muted)">NPV @ 5% (20 yr)</td><td class="num" style="color:var(--green-600)">+ € 373,298</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ ENERGY ══════════════ -->
+<section id="tab-energy" class="section">
+  <div class="section-header">
+    <h2>Energy analysis</h2>
+    <p>Photovoltaic generation vs. consumption, self-sufficiency, and heat pump integration</p>
+  </div>
+
+  <div class="grid-4">
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-solar-panel" aria-hidden="true"></i> Total PV output</div>
+      <div class="kpi-value">579,735</div>
+      <div class="kpi-sub">kWh / year</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-plug" aria-hidden="true"></i> Grid consumption</div>
+      <div class="kpi-value">189,476</div>
+      <div class="kpi-sub">kWh / year (from bill)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-arrows-exchange" aria-hidden="true"></i> Self-consumption</div>
+      <div class="kpi-value">151,525</div>
+      <div class="kpi-sub">kWh / year · 44% of total</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-upload" aria-hidden="true"></i> Grid export</div>
+      <div class="kpi-value">428,210</div>
+      <div class="kpi-sub">kWh / year (surplus PV)</div>
+      <div class="kpi-badge badge-teal">Available for heat pump</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Generation vs. demand breakdown</div>
+      <div style="position:relative; height:240px; margin-top:8px;">
+        <canvas id="chartEnergy" role="img" aria-label="Stacked bar chart comparing PV production 579735 kWh versus total consumption 341001 kWh. Consumption splits into grid 189476 and self-consumed 151525.">PV production 579,735 kWh; farm consumption 341,001 kWh (grid 189,476 + self-consumed 151,525).</canvas>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#639922"></span>PV self-consumed</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#C0DD97"></span>PV exported</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#B4B2A9"></span>Grid electricity</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">PV installations by year</div>
+      <div style="margin-bottom:1rem;">
+        <div class="progress-wrap" style="margin-bottom:16px;">
+          <div class="progress-label">
+            <span class="name">Plant 2016 · 32 kWp</span>
+            <span class="pval">33,247 kWh/yr</span>
+          </div>
+          <div class="progress-bar" style="height:10px;">
+            <div class="progress-fill" style="width:6%; background:var(--gray-400, #888)"></div>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span class="name">Plant 2023 · 493.9 kWp</span>
+            <span class="pval">546,488 kWh/yr</span>
+          </div>
+          <div class="progress-bar" style="height:10px;">
+            <div class="progress-fill" style="width:94%; background:var(--green-400)"></div>
+          </div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="card-title" style="margin-bottom:8px;">Heat pump electricity — why it's free</div>
+      <p style="font-size:12.5px; color:var(--text-muted); line-height:1.6;">The heat pump system consumes ~85,000 kWh/year. The farm already exports <strong style="color:var(--text)">428,210 kWh</strong> of surplus PV to the grid. Redirecting a fraction of this surplus through a Renewable Energy Community (CER) scheme covers the heat pump's electricity at zero marginal cost — turning an energy expense into a net income opportunity.</p>
+      <div style="background:var(--teal-50); border-radius:8px; padding:10px 12px; margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:12px; color:var(--teal-800);">CER incentive on 85,000 kWh</span>
+        <span style="font-size:16px; font-weight:700; color:var(--teal-600);">+ €9,180/yr</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Energy flow sankey (simplified)</div>
+    <div style="position:relative; height:160px; margin-top:4px;">
+      <canvas id="chartEnergyFlow" role="img" aria-label="Horizontal bar chart showing energy flow: 579735 kWh PV produced splits into 151525 kWh self-consumed, 85000 kWh to heat pump, and 342710 kWh exported.">PV output 579,735 kWh splits into: self-consumed 151,525; heat pump 85,000; exported 343,210.</canvas>
+    </div>
+    <div class="legend" style="margin-top:8px;">
+      <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>Self-consumed (existing loads)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#185FA5"></span>Heat pump (new load)</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#C0DD97"></span>Net export to grid</span>
+    </div>
+    <p class="footnote">Total farm consumption before heat pump: 341,001 kWh (grid 189,476 + self-consumed 151,525). Heat pump adds 85,000 kWh — fully absorbable within existing export surplus.</p>
+  </div>
+</section>
+
+<!-- ══════════════ PRODUCTION ══════════════ -->
+<section id="tab-production" class="section">
+  <div class="section-header">
+    <h2>Production performance</h2>
+    <p>Zootechnical baseline and projected benefit from summer cooling — 298 summer litters/year</p>
+  </div>
+
+  <div class="grid-4">
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-pig" aria-hidden="true"></i> Annual farrowings</div>
+      <div class="kpi-value">1,192</div>
+      <div class="kpi-sub">512 sows · 298 summer litters</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-scale" aria-hidden="true"></i> Weaned piglets</div>
+      <div class="kpi-value">15,133</div>
+      <div class="kpi-sub">12.70 per litter · 7.4 kg avg</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-trending-up" aria-hidden="true"></i> Extra weight (cooling)</div>
+      <div class="kpi-value">+2,341</div>
+      <div class="kpi-sub">kg live weight / year</div>
+      <div class="kpi-badge badge-green">+7.86 kg per litter</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-currency-euro" aria-hidden="true"></i> Production benefit</div>
+      <div class="kpi-value">€23.4k</div>
+      <div class="kpi-sub">@ €10/kg (weaner price)</div>
+      <div class="kpi-badge badge-teal">Summer season only</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Summer cooling: mechanism of benefit</div>
+      <div style="position:relative; height:220px;">
+        <canvas id="chartBenefit" role="img" aria-label="Bar chart showing three components of summer litter benefit: extra surviving piglets 2.22 kg, extra weaning weight 5.64 kg, total 7.86 kg per litter.">Benefit per summer litter: 2.22 kg from extra survivors, 5.64 kg from higher weaning weight, total 7.86 kg.</canvas>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>Extra surviving piglets (× weaning weight)</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#639922"></span>Weight gain per piglet (+6% × 12.7 piglets)</span>
+      </div>
+      <p class="footnote">Source: Wegner et al. 2014; Rao et al. 2023. –10 THI points in farrowing zone during June–August. +0.3 piglets/litter survival; +6% individual weaning weight.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Pilot farm baseline — key indicators</div>
+      <table class="data-table" style="margin-top:4px;">
+        <tr><th>Indicator</th><th class="num">Value</th></tr>
+        <tr><td>Sows at year start</td><td class="num">512</td></tr>
+        <tr><td>Farrowings / year</td><td class="num">1,192</td></tr>
+        <tr><td>Piglets born / litter</td><td class="num">14.35</td></tr>
+        <tr><td>Piglets weaned / litter</td><td class="num">12.70</td></tr>
+        <tr><td>Pre-weaning mortality</td><td class="num">11.6%</td></tr>
+        <tr><td>Avg weaning weight</td><td class="num">7.4 kg</td></tr>
+        <tr><td>Piglets sold</td><td class="num">13,840</td></tr>
+        <tr><td>Avg sale weight</td><td class="num">28.5 kg</td></tr>
+        <tr><td>Summer litters (25%)</td><td class="num" style="color:var(--teal-600); font-weight:700">298</td></tr>
+        <tr class="highlight"><td>Extra weight from cooling</td><td class="num">+2,341 kg/yr</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Annual benefit breakdown — energy savings + production gain</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-top:8px;">
+      <div style="background:var(--green-50); border-radius:8px; padding:1rem;">
+        <div style="font-size:11px; font-weight:600; color:var(--green-800); margin-bottom:6px;">
+          <i class="ti ti-flame-off" aria-hidden="true"></i> GAS SAVINGS
+        </div>
+        <div style="font-size:22px; font-weight:700; color:var(--green-600)">+ €23,000</div>
+        <div style="font-size:11px; color:var(--green-800); margin-top:4px;">244 MWh methane eliminated · €0.90/m³</div>
+      </div>
+      <div style="background:var(--teal-50); border-radius:8px; padding:1rem;">
+        <div style="font-size:11px; font-weight:600; color:var(--teal-800); margin-bottom:6px;">
+          <i class="ti ti-pig" aria-hidden="true"></i> PRODUCTION GAIN
+        </div>
+        <div style="font-size:22px; font-weight:700; color:var(--teal-600)">+ €23,400</div>
+        <div style="font-size:11px; color:var(--teal-800); margin-top:4px;">2,341 kg × €10/kg · summer litters only</div>
+      </div>
+      <div style="background:var(--blue-50); border-radius:8px; padding:1rem;">
+        <div style="font-size:11px; font-weight:600; color:var(--blue-600); margin-bottom:6px;">
+          <i class="ti ti-sum" aria-hidden="true"></i> TOTAL ANNUAL BENEFIT
+        </div>
+        <div style="font-size:22px; font-weight:700; color:var(--blue-600)">~ €46,000</div>
+        <div style="font-size:11px; color:var(--blue-600); margin-top:4px;">+ €9,180 with CER scheme → ~ €55,000</div>
+      </div>
+    </div>
+    <p class="footnote">Electricity for heat pump assumed at zero marginal cost (covered by existing PV export surplus of 428,210 kWh). Weaner price basis: €10/kg live weight.</p>
+  </div>
+</section>
+
+<!-- ══════════════ INVESTMENT ══════════════ -->
+<section id="tab-investment" class="section">
+  <div class="section-header">
+    <h2>Investment analysis — three scenarios</h2>
+    <p>5% cost of debt · 10-year loan + system replacement at year 10 · 20-year horizon · benefits ~€46,000/year</p>
+  </div>
+
+  <div class="grid-3">
+    <!-- Scenario 1 -->
+    <div class="scenario-card" style="background:var(--surface);">
+      <div class="scenario-header" style="background:var(--amber-50); color:var(--amber-600);">
+        <i class="ti ti-number-1" aria-hidden="true"></i> No incentives
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-row"><span class="label">Gross investment</span><span class="val">€ 390,000</span></div>
+        <div class="scenario-row"><span class="label">Grants</span><span class="val" style="color:var(--text-muted)">—</span></div>
+        <div class="scenario-row"><span class="label">Net investment</span><span class="val">€ 390,000</span></div>
+        <div class="scenario-row"><span class="label">Annual debt service (5%, 10yr)</span><span class="val">€ 50,507</span></div>
+        <div class="scenario-row"><span class="label">Annual benefit</span><span class="val" style="color:var(--green-600)">~ €46,000</span></div>
+        <div class="scenario-row"><span class="label">Cash flow yr 1–10</span><span class="val" style="color:var(--coral-400)">–€ 4,094/yr</span></div>
+        <div class="scenario-row"><span class="label">Replacement (yr 10)</span><span class="val">€ 200,000</span></div>
+        <div class="scenario-row"><span class="label">Cash flow yr 11–20</span><span class="val" style="color:var(--green-600)">+€ 20,512/yr</span></div>
+        <div class="scenario-row"><span class="label">Simple payback</span><span class="val">~ 8.5 years</span></div>
+        <div class="scenario-npv" style="background:var(--amber-50); color:var(--amber-600);">
+          <div>
+            <div class="npv-label">NPV 20yr @ 5%</div>
+            <div class="npv-val">+ € 65,629</div>
+          </div>
+          <span class="tag" style="background:var(--amber-100); color:var(--amber-600);">Marginal ✓</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scenario 2 -->
+    <div class="scenario-card" style="background:var(--surface); border: 2px solid var(--teal-400);">
+      <div class="scenario-header" style="background:var(--teal-50); color:var(--teal-800);">
+        <i class="ti ti-number-2" aria-hidden="true"></i> With grants (60%)
+        <span class="tag" style="background:var(--teal-400); color:#fff; margin-left:auto; font-size:10px;">Recommended</span>
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-row"><span class="label">Gross investment</span><span class="val">€ 390,000</span></div>
+        <div class="scenario-row"><span class="label">Public grants (CT 3.0 / CSR)</span><span class="val" style="color:var(--teal-600)">– € 234,000</span></div>
+        <div class="scenario-row"><span class="label">Net investment</span><span class="val" style="color:var(--teal-600); font-weight:700">€ 156,000</span></div>
+        <div class="scenario-row"><span class="label">Annual debt service (5%, 10yr)</span><span class="val">€ 20,203</span></div>
+        <div class="scenario-row"><span class="label">Annual benefit</span><span class="val" style="color:var(--green-600)">~ €46,000</span></div>
+        <div class="scenario-row"><span class="label">Cash flow yr 1–10</span><span class="val" style="color:var(--green-600)">+€ 26,211/yr</span></div>
+        <div class="scenario-row"><span class="label">Replacement (yr 10)</span><span class="val">€ 80,000</span></div>
+        <div class="scenario-row"><span class="label">Cash flow yr 11–20</span><span class="val" style="color:var(--green-600)">+€ 36,053/yr</span></div>
+        <div class="scenario-row"><span class="label">Simple payback</span><span class="val">~ 3.4 years</span></div>
+        <div class="scenario-npv" style="background:var(--teal-50); color:var(--teal-800);">
+          <div>
+            <div class="npv-label">NPV 20yr @ 5%</div>
+            <div class="npv-val">+ € 373,298</div>
+          </div>
+          <span class="tag" style="background:var(--teal-400); color:#fff;">Strong ✓✓</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scenario 3 -->
+    <div class="scenario-card" style="background:var(--surface);">
+      <div class="scenario-header" style="background:var(--green-50); color:var(--green-800);">
+        <i class="ti ti-number-3" aria-hidden="true"></i> Grants + solar CER
+      </div>
+      <div class="scenario-body">
+        <div class="scenario-row"><span class="label">Gross investment</span><span class="val">€ 390,000</span></div>
+        <div class="scenario-row"><span class="label">Public grants (60%)</span><span class="val" style="color:var(--green-600)">– € 234,000</span></div>
+        <div class="scenario-row"><span class="label">Net investment</span><span class="val" style="color:var(--green-600); font-weight:700">€ 156,000</span></div>
+        <div class="scenario-row"><span class="label">Annual debt service (5%, 10yr)</span><span class="val">€ 20,203</span></div>
+        <div class="scenario-row"><span class="label">Annual benefit (incl. CER)</span><span class="val" style="color:var(--green-600)">~ €55,000</span></div>
+        <div class="scenario-row"><span class="label">Cash flow yr 1–10</span><span class="val" style="color:var(--green-600)">+€ 35,797/yr</span></div>
+        <div class="scenario-row"><span class="label">Replacement (yr 10)</span><span class="val">€ 80,000</span></div>
+        <div class="scenario-row"><span class="label">Cash flow yr 11–20</span><span class="val" style="color:var(--green-600)">+€ 45,640/yr</span></div>
+        <div class="scenario-row"><span class="label">Simple payback</span><span class="val">~ 2.8 years</span></div>
+        <div class="scenario-npv" style="background:var(--green-50); color:var(--green-800);">
+          <div>
+            <div class="npv-label">NPV 20yr @ 5%</div>
+            <div class="npv-val">+ € 492,771</div>
+          </div>
+          <span class="tag" style="background:var(--green-400); color:#fff;">Optimal ✓✓✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Cumulative cash flow — 20-year horizon</div>
+    <div class="legend">
+      <span class="legend-item"><span class="legend-dot" style="background:#BA7517"></span>Scenario 1 — no incentives</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>Scenario 2 — with grants</span>
+      <span class="legend-item"><span class="legend-dot" style="background:#639922"></span>Scenario 3 — grants + solar</span>
+    </div>
+    <div style="position:relative; height:280px;">
+      <canvas id="chartCashflow" role="img" aria-label="Line chart showing cumulative cash flow over 20 years for three investment scenarios. Scenario 1 stays near zero for first decade. Scenarios 2 and 3 turn positive quickly and reach 373k and 493k respectively.">20-year cumulative cash flow: Scenario 1 marginally positive, Scenario 2 reaches +373k, Scenario 3 reaches +493k.</canvas>
+    </div>
+    <p class="footnote">Scenario 1 cash flow turns briefly negative in years 1–10 due to debt service (€50,507/yr) exceeding benefits (€46,000/yr). Year 10 dip = system replacement cost. Scenarios 2 and 3 are cash-flow positive from year 1.</p>
+  </div>
+</section>
+
+<!-- ══════════════ MARKET ══════════════ -->
+<section id="tab-market" class="section">
+  <div class="section-header">
+    <h2>Market potential & replication</h2>
+    <p>Scaling the pilot methodology across Italian and European pig farming — replication roadmap</p>
+  </div>
+
+  <div class="grid-4">
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-building-store" aria-hidden="true"></i> Italian target farms</div>
+      <div class="kpi-value">1,200</div>
+      <div class="kpi-sub">of 4,600 total pig farms</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-world" aria-hidden="true"></i> EU target farms</div>
+      <div class="kpi-value">65,000</div>
+      <div class="kpi-sub">with farrowing or gestation units</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-currency-euro" aria-hidden="true"></i> EU market (net, grants)</div>
+      <div class="kpi-value">€3.7B</div>
+      <div class="kpi-sub">gross investment potential</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label"><i class="ti ti-leaf" aria-hidden="true"></i> CO₂ at full scale</div>
+      <div class="kpi-value">–70k</div>
+      <div class="kpi-sub">t CO₂eq/year (2,000 farms)</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Market penetration roadmap</div>
+      <div style="margin-top:8px;">
+        <div class="mkt-row">
+          <div class="mkt-label">Italy — 3 yr (50 farms)</div>
+          <div class="mkt-bar-wrap">
+            <div class="mkt-bar" style="width:2.5%; background:var(--green-200);">
+              <span style="display:none">2.5%</span>
+            </div>
+          </div>
+          <div class="mkt-val" style="color:var(--green-600)">€7.8M</div>
+        </div>
+        <div class="mkt-row">
+          <div class="mkt-label">Italy — 5 yr (200 farms)</div>
+          <div class="mkt-bar-wrap">
+            <div class="mkt-bar" style="width:10%; background:var(--green-400);">
+            </div>
+          </div>
+          <div class="mkt-val" style="color:var(--green-600)">€31M</div>
+        </div>
+        <div class="mkt-row">
+          <div class="mkt-label">EU Mediterranean (5 yr)</div>
+          <div class="mkt-bar-wrap">
+            <div class="mkt-bar" style="width:25%; background:var(--teal-400);">
+            </div>
+          </div>
+          <div class="mkt-val" style="color:var(--teal-600)">€78M</div>
+        </div>
+        <div class="mkt-row">
+          <div class="mkt-label">EU full scale (10 yr)</div>
+          <div class="mkt-bar-wrap">
+            <div class="mkt-bar" style="width:100%; background:var(--teal-600);">
+              <span style="color:#fff">€312M</span>
+            </div>
+          </div>
+          <div class="mkt-val" style="color:var(--teal-800)">€312M</div>
+        </div>
+      </div>
+      <p class="footnote">Net investment after 60% public grants. Priority: farms in PDO (Protected Designation of Origin) supply chains — strongest ROI case.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Priority countries — pig production</div>
+      <div style="position:relative; height:220px; margin-top:4px;">
+        <canvas id="chartCountries" role="img" aria-label="Horizontal bar chart of EU pig production by country. Spain 30M, Germany 23M, France 14M, Poland 11M, Italy 9M.">EU pig production: Spain 30M, Germany 23M, France 14M, Poland 11M, Italy 9M heads.</canvas>
+      </div>
+      <div class="legend" style="margin-top:8px;">
+        <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>High heat-stress risk</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#639922"></span>Moderate heat-stress risk</span>
+        <span class="legend-item"><span class="legend-dot" style="background:#B4B2A9"></span>Lower heat-stress risk</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title"><i class="ti ti-chart-bar" aria-hidden="true"></i> Financial catalytic effect</div>
+      <p style="font-size:12.5px; color:var(--text-muted); line-height:1.6; margin-bottom:10px;">Every €1 of public grant mobilises €0.67 of private investment at farm level. At 2,000 farms: €468M public → €312M private capital deployed.</p>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:var(--green-50); border-radius:6px;">
+          <span style="font-size:12px; color:var(--green-800);">Green bond potential</span>
+          <span style="font-size:13px; font-weight:700; color:var(--green-600);">€312M+</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:var(--teal-50); border-radius:6px;">
+          <span style="font-size:12px; color:var(--teal-800);">Consulting market (1% fee)</span>
+          <span style="font-size:13px; font-weight:700; color:var(--teal-600);">€3.1M</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:var(--blue-50); border-radius:6px;">
+          <span style="font-size:12px; color:var(--blue-600);">Licensing / SaaS tool</span>
+          <span style="font-size:13px; font-weight:700; color:var(--blue-600);">TBD</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-transfer" aria-hidden="true"></i> Thematic replication</div>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-top:4px;">
+        <div style="padding:8px 10px; background:var(--teal-50); border-radius:6px; border-left:3px solid var(--teal-400);">
+          <div style="font-size:12px; font-weight:600; color:var(--teal-800);">Dairy cattle</div>
+          <div style="font-size:11.5px; color:var(--teal-600); margin-top:2px;">Heat stress reduces milk yield 10–25%. Direct methodology transfer. ~12,000 target farms in Italy.</div>
+        </div>
+        <div style="padding:8px 10px; background:var(--amber-50); border-radius:6px; border-left:3px solid var(--amber-400);">
+          <div style="font-size:12px; font-weight:600; color:var(--amber-600);">Poultry</div>
+          <div style="font-size:11.5px; color:var(--amber-600); margin-top:2px;">Even more acute heat sensitivity. Broiler & turkey barns represent a comparable market scale.</div>
+        </div>
+        <div style="padding:8px 10px; background:var(--blue-50); border-radius:6px; border-left:3px solid var(--blue-400);">
+          <div style="font-size:12px; font-weight:600; color:var(--blue-600);">Aquaculture</div>
+          <div style="font-size:11.5px; color:var(--blue-600); margin-top:2px;">Thermal management of intensive fish production environments — analogous technology pathway.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="ti ti-users" aria-hidden="true"></i> Societal impact</div>
+      <div style="display:flex; flex-direction:column; gap:6px; margin-top:4px;">
+        <div style="padding:8px 10px; border-radius:6px; background:var(--gray-50); border-left:3px solid var(--green-400);">
+          <div style="font-size:12px; font-weight:600;">Animal welfare</div>
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">Reduced thermal stress → better colostrum quality, passive immunity, meat quality in PDO chains</div>
+        </div>
+        <div style="padding:8px 10px; border-radius:6px; background:var(--gray-50); border-left:3px solid var(--teal-400);">
+          <div style="font-size:12px; font-weight:600;">Decarbonisation</div>
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">–35 t CO₂eq/farm/year. Aligned with Farm to Fork and Green Deal targets for agri-food sector</div>
+        </div>
+        <div style="padding:8px 10px; border-radius:6px; background:var(--gray-50); border-left:3px solid var(--blue-400);">
+          <div style="font-size:12px; font-weight:600;">Policy influence</div>
+          <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">Methodology shared with national ministry and EU DG AGRI to inform future CAP measures</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+function showTab(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  el.classList.add('active');
+}
+
+const GREEN = '#639922', TEAL = '#1D9E75', BLUE = '#185FA5', AMBER = '#BA7517';
+const GREEN2 = '#C0DD97', GRAY = '#B4B2A9';
+const opts = { responsive: true, maintainAspectRatio: false };
+
+new Chart(document.getElementById('chartOverview'), {
+  type: 'bar',
+  data: {
+    labels: ['Scenario 1\nNo incentives', 'Scenario 2\nWith grants', 'Scenario 3\nGrants + solar'],
+    datasets: [{
+      data: [65629, 373298, 492771],
+      backgroundColor: [AMBER, TEAL, GREEN],
+      borderRadius: 6,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    ...opts,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => '  NPV: € ' + ctx.parsed.y.toLocaleString('it-IT')
+        }
+      }
+    },
+    scales: {
+      y: {
+        grid: { color: 'rgba(128,128,128,0.1)' },
+        ticks: {
+          callback: v => '€' + Math.round(v/1000) + 'k',
+          color: '#888'
+        }
+      },
+      x: { grid: { display: false }, ticks: { color: '#888', font: { size: 11 } } }
+    }
+  }
+});
+
+new Chart(document.getElementById('chartEnergy'), {
+  type: 'bar',
+  data: {
+    labels: ['PV produced', 'Farm total consumption'],
+    datasets: [
+      { label: 'Self-consumed', data: [151525, 151525], backgroundColor: GREEN, borderRadius: 4 },
+      { label: 'Exported to grid', data: [428210, 0], backgroundColor: GREEN2, borderRadius: 4 },
+      { label: 'From grid', data: [0, 189476], backgroundColor: GRAY, borderRadius: 4 },
+    ]
+  },
+  options: {
+    ...opts,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { stacked: true, grid: { display: false }, ticks: { color: '#888' } },
+      y: { stacked: true, grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { callback: v => Math.round(v/1000) + 'k', color: '#888' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('chartEnergyFlow'), {
+  type: 'bar',
+  data: {
+    labels: ['PV output 579,735 kWh'],
+    datasets: [
+      { label: 'Self-consumed', data: [151525], backgroundColor: TEAL, borderRadius: 3 },
+      { label: 'Heat pump (new)', data: [85000], backgroundColor: BLUE, borderRadius: 3 },
+      { label: 'Net export', data: [343210], backgroundColor: GREEN2, borderRadius: 3 },
+    ]
+  },
+  options: {
+    ...opts,
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { stacked: true, grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { callback: v => Math.round(v/1000) + 'k', color: '#888' } },
+      y: { stacked: true, grid: { display: false }, ticks: { color: '#888' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('chartBenefit'), {
+  type: 'bar',
+  data: {
+    labels: ['Extra surviving piglets\n(+0.3 × 7.4 kg)', 'Higher weaning weight\n(+6% × 12.7 × 7.4 kg)', 'Total per litter'],
+    datasets: [{
+      data: [2.22, 5.64, 7.86],
+      backgroundColor: [TEAL, GREEN, '#27500A'],
+      borderRadius: 6,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    ...opts,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => '  +' + ctx.parsed.y.toFixed(2) + ' kg / litter' } } },
+    scales: {
+      y: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { callback: v => '+' + v + ' kg', color: '#888' } },
+      x: { grid: { display: false }, ticks: { color: '#888', font: { size: 11 } } }
+    }
+  }
+});
+
+// Cumulative cash flow — compute year by year
+function cumulativeCF(inv0, annualBenefit, debtService, replacementYr10, debtServiceYr11) {
+  const cf = [];
+  let cum = -inv0;
+  for (let yr = 1; yr <= 20; yr++) {
+    if (yr <= 10) {
+      cum += annualBenefit - debtService;
+    } else {
+      if (yr === 11) cum -= replacementYr10;
+      cum += annualBenefit - debtServiceYr11;
+    }
+    cf.push(Math.round(cum));
+  }
+  return cf;
+}
+
+const yrs = Array.from({length: 20}, (_, i) => 'Year ' + (i + 1));
+const cf1 = cumulativeCF(390000, 46000, 50507, 200000, 25901);
+const cf2 = cumulativeCF(156000, 46000, 20203, 80000, 10360);
+const cf3 = cumulativeCF(156000, 55000, 20203, 80000, 10360);
+
+new Chart(document.getElementById('chartCashflow'), {
+  type: 'line',
+  data: {
+    labels: yrs,
+    datasets: [
+      { label: 'Scenario 1', data: cf1, borderColor: AMBER, backgroundColor: 'transparent', borderWidth: 2, pointRadius: 3, borderDash: [4, 4] },
+      { label: 'Scenario 2', data: cf2, borderColor: TEAL, backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 3 },
+      { label: 'Scenario 3', data: cf3, borderColor: GREEN, backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 3 },
+    ]
+  },
+  options: {
+    ...opts,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => '  €' + ctx.parsed.y.toLocaleString('it-IT') } }
+    },
+    scales: {
+      y: {
+        grid: { color: 'rgba(128,128,128,0.1)' },
+        ticks: { callback: v => '€' + Math.round(v/1000) + 'k', color: '#888' }
+      },
+      x: { grid: { display: false }, ticks: { color: '#888', font: { size: 10 }, maxTicksLimit: 10 } }
+    }
+  }
+});
+
+new Chart(document.getElementById('chartCountries'), {
+  type: 'bar',
+  data: {
+    labels: ['Spain', 'Germany', 'France', 'Poland', 'Italy'],
+    datasets: [{
+      data: [30, 23, 14, 11, 9],
+      backgroundColor: [TEAL, GRAY, TEAL, GREEN, TEAL],
+      borderRadius: 4,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    ...opts,
+    indexAxis: 'y',
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => '  ' + ctx.parsed.x + 'M pigs' } } },
+    scales: {
+      x: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { callback: v => v + 'M', color: '#888' } },
+      x: { grid: { color: 'rgba(128,128,128,0.1)' }, ticks: { callback: v => v + 'M', color: '#888' } },
+      y: { grid: { display: false }, ticks: { color: '#888' } }
+    }
+  }
+});
+</script>
+</body>
+</html>
